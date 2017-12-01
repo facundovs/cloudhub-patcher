@@ -3,6 +3,7 @@ package org.mule.tools.cloudhub.patcher.patcher;
 import static java.lang.System.getProperty;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import org.mule.tools.cloudhub.patcher.github.GitHubClient;
 import org.mule.tools.cloudhub.patcher.github.GitHubClient.GitHubClientException;
 import org.mule.tools.cloudhub.patcher.pom.PomUtils;
 import org.mule.tools.cloudhub.patcher.pom.PomUtils.PomModifierException;
+
+import org.apache.commons.io.FileUtils;
 
 public class CloudHubPatcher
 {
@@ -74,6 +77,18 @@ public class CloudHubPatcher
         pomUtils.addArtifactItems(repository.getPath() + "/" + CLOUDHUB_RELATIVE_POM_LOCATION, POM_NEAR_ELEMENT, groupId, seArtifacts, POM_ARTIFACT_TYPE, Integer.parseInt(POM_TABS));
         gitHubClient.commit(repository, commitMessage);
         gitHubClient.push(repository, GITHUB_USERNAME, GITHUB_PASSWORD);
+
+        if (GITHUB_LOCAL_REPOSITORY == null)
+        {
+            try
+            {
+                FileUtils.deleteDirectory(repository);
+            }
+            catch (IOException e)
+            {
+                // Ignore
+            }
+        }
     }
 
     public String getCurrentArtifacts() throws GitHubClientException, PomModifierException
@@ -87,6 +102,18 @@ public class CloudHubPatcher
         else
         {
             repository = new File(GITHUB_LOCAL_REPOSITORY);
+        }
+
+        if (GITHUB_LOCAL_REPOSITORY == null)
+        {
+            try
+            {
+                FileUtils.deleteDirectory(repository);
+            }
+            catch (IOException e)
+            {
+                // Ignore.
+            }
         }
 
         return pomUtils.getSEArtifactItems(repository.getPath() + "/" + CLOUDHUB_RELATIVE_POM_LOCATION);
