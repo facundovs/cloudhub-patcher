@@ -1,6 +1,7 @@
 package org.mule.tools.cloudhub.patcher.pom;
 
 import static java.lang.String.format;
+import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 
 import org.mule.tools.cloudhub.patcher.patcher.SupportEscalationArtifact;
@@ -9,10 +10,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class PomModifier
+public class PomUtils
 {
+    private static final String ARTIFACT_REGEX =
+            "<groupId>com.mulesoft.muleesb.patches<\\/groupId>[\\n\\r\\t ]*<artifactId>SE-[0-9-.]{1,}<\\/artifactId>[\\n\\r\\t ]*<version>[0-9-a-zA-Z-.]+<\\/version>";
+    private static final String ARTIFACT_ID_REGEX =
+            "<artifactId>(.+)<\\/artifactId>"
+            ;
+    private static final String VERSION_REGEX =
+            "<version>(.+)<\\/version>";
+    private static final Pattern ARTIFACT_PATTERN = Pattern.compile(ARTIFACT_REGEX);
+    private static final Pattern ARTIFACT_ID_PATTERN = Pattern.compile(ARTIFACT_ID_REGEX);
+    private static final Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
     private static final String NEAR_ELEMENT_TEMPLATE = "%%NEAR_ELEMENT%";
     private static final String GROUP_ID_TEMPLATE = "%GROUP_ID%";
     private static final String ARTIFACT_ID_TEMPLATE = "%ARTIFACT_ID%";
@@ -72,6 +86,53 @@ public class PomModifier
         }
 
         rewritePom(pomPath, successOutput);
+    }
+
+    public String getSEArtifactItems (String pomPath) throws PomModifierException
+    {
+
+        File pom = new File(pomPath);
+        if (! pom.exists())
+        {
+            throw new PomModifierException(format("The pom with the path %s doesn't exist", pomPath));
+        }
+        String pomContent;
+        try
+        {
+            pomContent = readFileToString(pom);
+        }
+        catch (Exception e)
+        {
+            throw new PomModifierException("There was a problem trying to read the pom");
+        }
+
+        List<String> foundArtifacts = new ArrayList<>();
+        Matcher matcher = ARTIFACT_PATTERN.matcher(pomContent);
+        while(matcher.find())
+        {
+             foundArtifacts.add(pomContent.substring(matcher.start(), matcher.end()));
+        }
+
+        StringBuilder formattedFoundArtifacts = new StringBuilder();
+        for (String foundArtifact : foundArtifacts)
+        {
+            Matcher artifactIdMatcher = ARTIFACT_ID_PATTERN.matcher(foundArtifact);
+            if(artifactIdMatcher.find())
+            {
+                formattedFoundArtifacts.append(artifactIdMatcher.group(1) + "/");
+            }
+
+            Matcher versionMatcher = VERSION_PATTERN.matcher(foundArtifact);
+
+            if(versionMatcher.find())
+            {
+                formattedFoundArtifacts.append(versionMatcher.group(1));
+            }
+
+            formattedFoundArtifacts.append(",");
+        }
+
+        return formattedFoundArtifacts.toString().substring(0, formattedFoundArtifacts.toString().length() - 1);
     }
 
     private void rewritePom (String pomPath, String newContent) throws PomModifierException
