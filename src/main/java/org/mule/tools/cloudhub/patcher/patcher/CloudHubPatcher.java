@@ -29,7 +29,7 @@ public class CloudHubPatcher
     private static final String GITHUB_LOCAL_REPOSITORY_PROPERTY = "patcher.cloudhub.local.repository";
 
 
-    private static final String CLOUDHUB_REPOSITORY_URL = getProperty(CLOUDHUB_REPOSITORY_URL_PROPERTY, "https://github.com/facundovs/cloudhub-mule-services");
+    private static final String CLOUDHUB_REPOSITORY_URL = getProperty(CLOUDHUB_REPOSITORY_URL_PROPERTY, "https://github.com/mulesoft/cloudhub-mule-services");
     private static final String CLOUDHUB_REPOSITORY_BRANCH = getProperty(CLOUDHUB_REPOSITORY_BRANCH_PROPERTY);
     private static final String CLOUDHUB_RELATIVE_POM_LOCATION = getProperty(CLOUDHUB_RELATIVE_POM_LOCATION_PROPERTY, "mule-extensions/mule-distribution/pom.xml");
     private static final String GITHUB_USERNAME = getProperty(GITHUB_USERNAME_PROPERTY);
@@ -45,78 +45,49 @@ public class CloudHubPatcher
     private final PomUtils pomUtils = new PomUtils();
 
 
-    public void patch(String branchName, String commitMessage, String groupId, List<SupportEscalationArtifact> seArtifacts) throws GitHubClientException, PomModifierException
+    public void patch(String githubUsername, String githubPassword,String baseBranch, String branchName, String commitMessage, String groupId, List<SupportEscalationArtifact> seArtifacts) throws GitHubClientException, PomModifierException
     {
-        if (GITHUB_USERNAME == null)
-        {
-            throw new IllegalStateException("GitHub username can't be null. Please set it using the system property: " + GITHUB_USERNAME_PROPERTY);
-        }
-
-        if (GITHUB_PASSWORD == null)
-        {
-            throw new IllegalStateException("GitHub password can't be null. Please set it using the system property: " + GITHUB_PASSWORD_PROPERTY);
-        }
-
-        if (CLOUDHUB_REPOSITORY_BRANCH == null)
-        {
-            throw new IllegalStateException("GitHub original branch can't be null. Please set it using the system property: " + CLOUDHUB_REPOSITORY_BRANCH);
-        }
 
         File repository;
 
-        if (GITHUB_LOCAL_REPOSITORY == null)
-        {
-            repository = gitHubClient.cloneRepository(GITHUB_USERNAME, GITHUB_PASSWORD, CLOUDHUB_REPOSITORY_URL, CLOUDHUB_REPOSITORY_BRANCH);
-        }
-        else
-        {
-            repository = new File(GITHUB_LOCAL_REPOSITORY);
-        }
+        repository = gitHubClient.cloneRepository(githubUsername, githubPassword, CLOUDHUB_REPOSITORY_URL, baseBranch);
+
 
         gitHubClient.createBranch(repository, branchName);
         pomUtils.addArtifactItems(repository.getPath() + "/" + CLOUDHUB_RELATIVE_POM_LOCATION, POM_NEAR_ELEMENT, groupId, seArtifacts, POM_ARTIFACT_TYPE, Integer.parseInt(POM_TABS));
         gitHubClient.commit(repository, commitMessage);
-        gitHubClient.push(repository, GITHUB_USERNAME, GITHUB_PASSWORD);
+        gitHubClient.push(repository, githubUsername, githubPassword);
 
-        if (GITHUB_LOCAL_REPOSITORY == null)
+
+        try
         {
-            try
-            {
-                FileUtils.deleteDirectory(repository);
-            }
-            catch (IOException e)
-            {
-                // Ignore
-            }
+            FileUtils.deleteDirectory(repository);
         }
+        catch (IOException e)
+        {
+            // Ignore
+        }
+
     }
 
-    public String getCurrentArtifacts() throws GitHubClientException, PomModifierException
+    public String getCurrentArtifacts(String githubUsername, String githubPassword, String baseBranch) throws GitHubClientException, PomModifierException
     {
         File repository;
 
-        if (GITHUB_LOCAL_REPOSITORY == null)
+        repository = gitHubClient.cloneRepository(githubUsername, githubPassword, CLOUDHUB_REPOSITORY_URL, baseBranch);
+
+        String result = pomUtils.getSEArtifactItems(repository.getPath() + "/" + CLOUDHUB_RELATIVE_POM_LOCATION);
+
+        try
         {
-            repository = gitHubClient.cloneRepository(GITHUB_USERNAME, GITHUB_PASSWORD, CLOUDHUB_REPOSITORY_URL, CLOUDHUB_REPOSITORY_BRANCH);
+            FileUtils.deleteDirectory(repository);
         }
-        else
+        catch (IOException e)
         {
-            repository = new File(GITHUB_LOCAL_REPOSITORY);
+            // Ignore.
         }
 
-        if (GITHUB_LOCAL_REPOSITORY == null)
-        {
-            try
-            {
-                FileUtils.deleteDirectory(repository);
-            }
-            catch (IOException e)
-            {
-                // Ignore.
-            }
-        }
-
-        return pomUtils.getSEArtifactItems(repository.getPath() + "/" + CLOUDHUB_RELATIVE_POM_LOCATION);
+        return result;
     }
 
     public static void main(String[] args) throws GitHubClientException, PomModifierException
@@ -124,6 +95,6 @@ public class CloudHubPatcher
         List<SupportEscalationArtifact> supportEscalationArtifacts = new ArrayList<>();
         supportEscalationArtifacts.add(new SupportEscalationArtifact("SE-1234", "1.0.0"));
         CloudHubPatcher cloudHubPatcher = new CloudHubPatcher();
-        cloudHubPatcher.patch("patch-test", "Patching CH", "org.mule.patches", supportEscalationArtifacts);
+        cloudHubPatcher.patch("githubUsername","githubPassword","3.8.5","patch-test", "Patching CH", "org.mule.patches", supportEscalationArtifacts);
     }
 }
