@@ -29,7 +29,7 @@ public class CloudHubPatcher
     private static final String GITHUB_LOCAL_REPOSITORY_PROPERTY = "patcher.cloudhub.local.repository";
 
 
-    private static final String CLOUDHUB_REPOSITORY_URL = getProperty(CLOUDHUB_REPOSITORY_URL_PROPERTY, "https://github.com/mulesoft/cloudhub-mule-services");
+    private static final String CLOUDHUB_REPOSITORY_URL = getProperty(CLOUDHUB_REPOSITORY_URL_PROPERTY, "https://github.com/ndinu/cloudhub-mule-services");
     private static final String CLOUDHUB_REPOSITORY_BRANCH = getProperty(CLOUDHUB_REPOSITORY_BRANCH_PROPERTY);
     private static final String CLOUDHUB_RELATIVE_POM_LOCATION = getProperty(CLOUDHUB_RELATIVE_POM_LOCATION_PROPERTY, "mule-extensions/mule-distribution/pom.xml");
     private static final String GITHUB_USERNAME = getProperty(GITHUB_USERNAME_PROPERTY);
