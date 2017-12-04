@@ -30,16 +30,12 @@ public class CloudHubPatcher
 
 
     private static final String CLOUDHUB_REPOSITORY_URL = getProperty(CLOUDHUB_REPOSITORY_URL_PROPERTY, "https://github.com/ndinu/cloudhub-mule-services");
-    private static final String CLOUDHUB_REPOSITORY_BRANCH = getProperty(CLOUDHUB_REPOSITORY_BRANCH_PROPERTY);
     private static final String CLOUDHUB_RELATIVE_POM_LOCATION = getProperty(CLOUDHUB_RELATIVE_POM_LOCATION_PROPERTY, "mule-extensions/mule-distribution/pom.xml");
-    private static final String GITHUB_USERNAME = getProperty(GITHUB_USERNAME_PROPERTY);
-    private static final String GITHUB_PASSWORD = getProperty(GITHUB_PASSWORD_PROPERTY);
-    private static final String GITHUB_LOCAL_REPOSITORY = getProperty(GITHUB_LOCAL_REPOSITORY_PROPERTY);
 
     private static final String POM_NEAR_ELEMENT = getProperty(POM_NEAR_ELEMENT_PROPERTY, "<!-- mule patches go here -->");
     private static final String POM_ARTIFACT_TYPE = getProperty(POM_ARTIFACT_TYPE_PROPERTY, "jar");
 
-    private static final String POM_TABS = getProperty(POM_NUMBER_OF_TABS_PROPERTY, "8");
+    private static final String POM_TABS = getProperty(POM_NUMBER_OF_TABS_PROPERTY, "32");
 
     private final GitHubClient gitHubClient = new GitHubClient();
     private final PomUtils pomUtils = new PomUtils();

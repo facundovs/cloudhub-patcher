@@ -50,10 +50,10 @@ public class PomUtils
             NEW_LINE + CHILD_INDENTATION_TEMPLATE + "<outputDirectory>${mule.unpack.directory}\\/lib\\/user<\\/outputDirectory>" +
             NEW_LINE + PARENT_INDENTATION_TEMPLATE+ "<\\/artifactItem>";
 
-    public void addArtifactItems (String pomPath, String nearElement, String groupId, List<SupportEscalationArtifact> seArtifacts, String artifactType, int numberOfTabs) throws PomModifierException
+    public void addArtifactItems (String pomPath, String nearElement, String groupId, List<SupportEscalationArtifact> seArtifacts, String artifactType, int numberOfIdentationSpaces) throws PomModifierException
     {
-        String parentIndentation = format("%0" + numberOfTabs + "d", 0).replace("0", TAB);
-        String childIndentation = format("%0" + (numberOfTabs + 1)+ "d", 0).replace("0", TAB);
+        String parentIndentation = format("%0" + numberOfIdentationSpaces + "d", 0).replace("0", TAB);
+        String childIndentation = format("%0" + (numberOfIdentationSpaces + 1)+ "d", 0).replace("0", TAB);
         StringBuilder artifacts = new StringBuilder();
         for (SupportEscalationArtifact seArtifact : seArtifacts)
         {
@@ -86,7 +86,7 @@ public class PomUtils
         {
             throw new PomModifierException("There was an error trying to add the artifactItem: " + errorOutput );
         }
-        String result = successOutput.replace(TAB, "\t")
+        String result = successOutput.replace(TAB, " ")
                             .replace(NEW_LINE, "\n");
         rewritePom(pomPath, result);
     }
