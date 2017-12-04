@@ -53,7 +53,7 @@ public class PomUtils
     public void addArtifactItems (String pomPath, String nearElement, String groupId, List<SupportEscalationArtifact> seArtifacts, String artifactType, int numberOfIdentationSpaces) throws PomModifierException
     {
         String parentIndentation = format("%0" + numberOfIdentationSpaces + "d", 0).replace("0", TAB);
-        String childIndentation = format("%0" + (numberOfIdentationSpaces + 1)+ "d", 0).replace("0", TAB);
+        String childIndentation = format("%0" + (numberOfIdentationSpaces + 4)+ "d", 0).replace("0", TAB);
         StringBuilder artifacts = new StringBuilder();
         for (SupportEscalationArtifact seArtifact : seArtifacts)
         {
