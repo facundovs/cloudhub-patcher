@@ -52,6 +52,6 @@ public class PomUtilsTestCase
     public void testFindArtifacts() throws Exception
     {
         String result = pomUtils.getSEArtifactItems("src/test/resources/pom.xml");
-        assertThat(result, is("SE-6837-3.9.0/1.0,SE-7057-3.9.0/1.0.0,SE-7087-3.9.0/1.0.0"));
+        assertThat(result, is("SE-6837/1.0,SE-7057/1.0.0,SE-7087/1.0.0"));
     }
 }
