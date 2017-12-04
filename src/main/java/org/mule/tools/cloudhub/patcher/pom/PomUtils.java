@@ -37,19 +37,18 @@ public class PomUtils
     private static final String ARTIFACTS_TEMPLATE = "%ARTIFACTS_TEMPLATE";
     private static final String SED_COMMAND = "sed";
     private static final String NEW_LINE = "%%NEW_LINE%%";
-    private static final String RETURN_LINE = "%%RETURN_LINE";
     private static final String TAB = "%%TAB%%";
     private static String ADD_ARTIFACT_ELEMENT_TEMPLATE =
             "s/"+ NEAR_ELEMENT_TEMPLATE +"/" + NEAR_ELEMENT_TEMPLATE + ARTIFACTS_TEMPLATE+ "/g";
     private static String FULL_ARTIFACTS_TEMPLATE =
-            NEW_LINE + RETURN_LINE + PARENT_INDENTATION_TEMPLATE + "<artifactItem>" +
-            NEW_LINE + RETURN_LINE + CHILD_INDENTATION_TEMPLATE + "<groupId>" + GROUP_ID_TEMPLATE + "<\\/groupId>" +
-            NEW_LINE + RETURN_LINE + CHILD_INDENTATION_TEMPLATE + "<artifactId>" + ARTIFACT_ID_TEMPLATE + "<\\/artifactId>" +
-            NEW_LINE + RETURN_LINE + CHILD_INDENTATION_TEMPLATE + "<version>" + VERSION_TEMPLATE + "<\\/version>" +
-            NEW_LINE + RETURN_LINE + CHILD_INDENTATION_TEMPLATE + "<type>" + TYPE_TEMPLATE + "<\\/type>" +
-            NEW_LINE + RETURN_LINE + CHILD_INDENTATION_TEMPLATE + "<overWrite>true<\\/overWrite>" +
-            NEW_LINE + RETURN_LINE + CHILD_INDENTATION_TEMPLATE + "<outputDirectory>${mule.unpack.directory}\\/lib\\/user<\\/outputDirectory>" +
-            NEW_LINE + RETURN_LINE + PARENT_INDENTATION_TEMPLATE+ "<\\/artifactItem>";
+            NEW_LINE + PARENT_INDENTATION_TEMPLATE + "<artifactItem>" +
+            NEW_LINE + CHILD_INDENTATION_TEMPLATE + "<groupId>" + GROUP_ID_TEMPLATE + "<\\/groupId>" +
+            NEW_LINE + CHILD_INDENTATION_TEMPLATE + "<artifactId>" + ARTIFACT_ID_TEMPLATE + "<\\/artifactId>" +
+            NEW_LINE + CHILD_INDENTATION_TEMPLATE + "<version>" + VERSION_TEMPLATE + "<\\/version>" +
+            NEW_LINE + CHILD_INDENTATION_TEMPLATE + "<type>" + TYPE_TEMPLATE + "<\\/type>" +
+            NEW_LINE + CHILD_INDENTATION_TEMPLATE + "<overWrite>true<\\/overWrite>" +
+            NEW_LINE + CHILD_INDENTATION_TEMPLATE + "<outputDirectory>${mule.unpack.directory}\\/lib\\/user<\\/outputDirectory>" +
+            NEW_LINE + PARENT_INDENTATION_TEMPLATE+ "<\\/artifactItem>";
 
     public void addArtifactItems (String pomPath, String nearElement, String groupId, List<SupportEscalationArtifact> seArtifacts, String artifactType, int numberOfTabs) throws PomModifierException
     {
@@ -88,8 +87,7 @@ public class PomUtils
             throw new PomModifierException("There was an error trying to add the artifactItem: " + errorOutput );
         }
         String result = successOutput.replace(TAB, "\t")
-                            .replace(NEW_LINE, "\n")
-                            .replace(RETURN_LINE, "\r");
+                            .replace(NEW_LINE, "\n");
         rewritePom(pomPath, result);
     }
 
