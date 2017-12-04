@@ -122,7 +122,9 @@ public class PomUtils
             Matcher artifactIdMatcher = ARTIFACT_ID_PATTERN.matcher(foundArtifact);
             if(artifactIdMatcher.find())
             {
-                formattedFoundArtifacts.append(artifactIdMatcher.group(1) + "/");
+                String patchNameWithVersion = artifactIdMatcher.group(1);
+                String patchName = patchNameWithVersion.substring(0, patchNameWithVersion.lastIndexOf("-"));
+                formattedFoundArtifacts.append(patchName + "/");
             }
 
             Matcher versionMatcher = VERSION_PATTERN.matcher(foundArtifact);
